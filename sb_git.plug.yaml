@@ -5,11 +5,11 @@ functions:
   gitCloneCmd:
     path: "sb_git.ts:gitClone"
     command:
-      name: "Git: Clone repo"
+      name: "Git: Setup git repository"
   syncFromGitCmd:
     path: "sb_git.ts:sync"
     command:
-      name: "Git: Sync from Git"
+      name: "Git: Sync with git repository"
   replaceTokenCmd:
     path: "sb_git.ts:replaceToken"
     command:

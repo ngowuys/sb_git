@@ -8,16 +8,14 @@ interface IGitInitPayload {
 
 // TODO: Add support SSH clone?
 export const gitClone = async () => {
-  // TODO: Check if Git exists or not.
   const gitUrl = await getGitRemoteUrl();
   if (gitUrl != "") {
-    const gitExist = await editor.prompt(
+    await confirmPrompt(
       "Found existed Git setup, do you want to continue? This will delete old git config? (Yes/No)",
     );
-    if (gitExist?.toLowerCase() == "yes" || gitExist?.toLowerCase() == "y") {
-      await removeGit();
-    } else return;
+    await removeGit();
   }
+
   // TODO: Handle HTTP and SSH
   const url = await editor.prompt(`Project URL:`);
   if (!url) return;
@@ -34,24 +32,19 @@ export const gitClone = async () => {
   const email = await editor.prompt(`Your email:`);
   if (!email) return;
 
-  // TODO: Add confirmation box
-  const confirm = await editor.prompt(
-    `Your content in git repo will overide current space, continue? (Yes/No)`,
+  await confirmPrompt(
+    "Your content in git repo will overide current space, continue? (Yes/No)",
   );
-  if (confirm?.toLowerCase() == "yes" || confirm?.toLowerCase() == "y") {
-    const parts = url.split("/");
-    parts[2] = `${token}@${parts[2]}`;
 
-    const payload: IGitInitPayload = {
-      url: parts.join("/"),
-      name,
-      email,
-    };
-    await initRepo(payload);
-  } else {
-    editor.flashNotification(`User cancelled.`);
-    return;
-  }
+  const parts = url.split("/");
+  parts[2] = `${token}@${parts[2]}`;
+
+  const payload: IGitInitPayload = {
+    url: parts.join("/"),
+    name,
+    email,
+  };
+  await initRepo(payload);
 };
 
 export const sync = async () => {
@@ -92,6 +85,7 @@ export const replaceToken = async () => {
 };
 
 export const changeGitRepo = async () => {
+  await confirmPrompt("Are you sure to continue? (Yes/No)");
   console.log(`Deleting old .git folder`);
   await shell.run("rm", ["-rf", ".git"]);
   console.log(`Trigger git clone`);
@@ -174,8 +168,17 @@ const removeGit = async () => {
 };
 
 // TODO: Read config to make sure user want to send flash notify when do smthing
-const flashNotify = async (msg?: string) => {
-  // TODO: Check config
+// const flashNotify = async (msg: string) => {
+//   // TODO: Check config
 
-  await editor.flashNotification(msg);
+//   await editor.flashNotification(msg);
+// };
+
+const confirmPrompt = async (msg: string) => {
+  const confirm = await editor.prompt(msg);
+  if (confirm?.toLowerCase() != "yes" || confirm?.toLowerCase() != "y") {
+    console.log("User cancelled!");
+    await editor.flashNotification("User cancelled!");
+    return;
+  }
 };
