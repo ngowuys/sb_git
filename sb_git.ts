@@ -76,6 +76,10 @@ export const changeGitRepo = async () => {
 };
 
 export const scheduleCommit = async () => {
+  const currentMin = new Date().getMinutes();
+  if (currentMin % 5 === 0) {
+    await sync();
+  }
 };
 
 const initRepo = async (payload: IGitInitPayload) => {
