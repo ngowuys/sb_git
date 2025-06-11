@@ -53,7 +53,8 @@ export const replaceToken = async () => {
   // Expected output
   // Ex1: https://user:token@gitlab.com/user/repo.git
   // Ex2: https://token@github.com/user/repo.git
-  const url = (await shell.run("git", ["get-url", "origin"])).stdout.trim();
+  const url = (await shell.run("git", ["remote", "get-url", "origin"])).stdout
+    .trim();
 
   const parts = url.split("/");
   parts[2] = parts[2].replace(/^.*@/, `${token}@`);
