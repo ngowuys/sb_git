@@ -11,7 +11,7 @@ export const gitClone = async () => {
   if (!url) return;
 
   const token = await editor.prompt(
-    `Access token (For GitLab: username:access_token): `,
+    `Access token (For GitLab: username:access_token):`,
   );
   if (!token) return;
 
@@ -32,6 +32,7 @@ export const gitClone = async () => {
 
   await initRepo(payload);
 };
+
 export const sync = async () => {
   console.log(`Starting sync with git repo`);
   await commit();
@@ -42,10 +43,39 @@ export const sync = async () => {
   console.log(`Done with sync task`);
 };
 
-export const modifyInfo = async () => {
+export const replaceToken = async () => {
+  const token = await editor.prompt(
+    `Enter new token (For GitLab: username:access_token):`,
+  );
+  if (!token) return;
+
+  // Get current origin
+  // Expected output
+  // Ex1: https://user:token@gitlab.com/user/repo.git
+  // Ex2: https://token@github.com/user/repo.git
+  const url = (await shell.run("git", ["get-url", "origin"])).stdout.trim();
+
+  const parts = url.split("/");
+  parts[2] = parts[2].replace(/^.*@/, `${token}@`);
+  const newUrl = parts.join("/");
+  if (newUrl.trim() == "") {
+    await editor.flashNotification(`Failed to replace token`);
+    return;
+  }
+
+  // Update new origin
+  await shell.run("git", ["remote", "set-url", "origin", newUrl]);
+  await editor.flashNotification(`Replaced token successfully!`);
 };
 
-export const autoCommit = async () => {
+export const changeGitRepo = async () => {
+  console.log(`Deleting old .git folder`);
+  await shell.run("rm", ["-rf", ".git"]);
+  console.log(`Trigger gitClone`);
+  await gitClone();
+};
+
+export const scheduleCommit = async () => {
 };
 
 const initRepo = async (payload: IGitInitPayload) => {
@@ -53,10 +83,12 @@ const initRepo = async (payload: IGitInitPayload) => {
     "Cloning your git repo, it might take some time.",
   );
   await shell.run("mkdir", ["clone", payload.url, "_sb_git"]);
+
   // Create .gitignore file
   await shell.run("echo", [".silverbullet.db*", ">", ".gitignore"]);
   await shell.run("echo", ["_plug/", ">>", ".gitignore"]);
   await shell.run("echo", ["Library/", ">>", ".gitignore"]);
+
   // Move content and .git folder from _sb_git
   await shell.run("bash", ["-c", "mv -f _sb_git/{.,}* . 2> /dev/null; true"]);
   await shell.run("rm", ["-rf", "_sb_git"]);

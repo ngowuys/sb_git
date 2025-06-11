@@ -10,11 +10,15 @@ functions:
     path: "sb_git:sync"
     command:
       name: "Git: Sync from Git"
-  modifyInfoCmd:
-    path: "sb_git:modifyInfo"
+  replaceTokenCmd:
+    path: "sb_git:replaceToken"
     command:
-      name: "Git: Modify info"
-  autoCommit:
-    path: "sb_git:autoCommit"
+      name: "Git: Replace token"
+  changeGitRepoCmd:
+    path: "sb_git:changeGitRepo"
+    command:
+      name: "Git: Change git repo"
+  scheduleCommitCmd:
+    path: "sb_git:scheduleCommit"
     env: server
-    cron: "*/5 * * * *"
+    cron: "* * * * *"
