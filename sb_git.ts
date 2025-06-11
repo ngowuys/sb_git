@@ -7,7 +7,7 @@ interface IGitInitPayload {
 }
 
 export const gitClone = async () => {
-  const url = await editor.prompt(`Github project URL:`);
+  const url = await editor.prompt(`Project URL:`);
   if (!url) return;
 
   const token = await editor.prompt(
@@ -87,9 +87,10 @@ const initRepo = async (payload: IGitInitPayload) => {
   await editor.flashNotification(
     "Cloning your git repo, it might take some time.",
   );
-  await shell.run("mkdir", ["clone", payload.url, "_sb_git"]);
+  await shell.run("git", ["clone", payload.url, "_sb_git"]);
 
   // Create .gitignore file
+  console.log(`Creating .gitignore file`);
   await shell.run("echo", [".silverbullet.db*", ">", ".gitignore"]);
   await shell.run("echo", ["_plug/", ">>", ".gitignore"]);
   await shell.run("echo", ["Library/", ">>", ".gitignore"]);
