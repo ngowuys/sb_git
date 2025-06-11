@@ -3,22 +3,22 @@ requiredPermissions:
   - shell
 functions:
   gitCloneCmd:
-    path: "sb_git:gitClone"
+    path: "sb_git.ts:gitClone"
     command:
       name: "Git: Clone repo"
   syncFromGitCmd:
-    path: "sb_git:sync"
+    path: "sb_git.ts:sync"
     command:
       name: "Git: Sync from Git"
   replaceTokenCmd:
-    path: "sb_git:replaceToken"
+    path: "sb_git.ts:replaceToken"
     command:
       name: "Git: Replace token"
   changeGitRepoCmd:
-    path: "sb_git:changeGitRepo"
+    path: "sb_git.ts:changeGitRepo"
     command:
       name: "Git: Change git repo"
   scheduleCommitCmd:
-    path: "sb_git:scheduleCommit"
+    path: "sb_git.ts:scheduleCommit"
     env: server
     cron: "* * * * *"

@@ -1,4 +1,4 @@
-import { editor, shell, syscall } from "@silverbulletmd/silverbullet/syscalls";
+import { editor, shell } from "@silverbulletmd/silverbullet/syscalls";
 
 interface IGitInitPayload {
   url: string;
