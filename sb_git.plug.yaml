@@ -1,0 +1,20 @@
+name: sb_git
+requiredPermissions:
+  - shell
+functions:
+  gitCloneCmd:
+    path: "sb_git:gitClone"
+    command:
+      name: "Git: Clone repo"
+  syncFromGitCmd:
+    path: "sb_git:sync"
+    command:
+      name: "Git: Sync from Git"
+  modifyInfoCmd:
+    path: "sb_git:modifyInfo"
+    command:
+      name: "Git: Modify info"
+  autoCommit:
+    path: "sb_git:autoCommit"
+    env: server
+    cron: "*/5 * * * *"
