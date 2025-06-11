@@ -17,27 +17,23 @@ export const gitClone = async () => {
   }
 
   // TODO: Handle HTTP and SSH
-  const url = await editor.prompt(`Project URL:`);
-  if (!url) return;
+  const url = await inputPrompt("Project URL:");
 
   // TODO: Allow input SSH Key if use SSH
-  const token = await editor.prompt(
-    `Access token (For GitLab: username:access_token):`,
+  const accessToken = await inputPrompt(
+    "Access token (For GitLab: username:access_token):",
   );
-  if (!token) return;
 
-  const name = await editor.prompt(`Your name:`);
-  if (!name) return;
+  const name = await inputPrompt("Your name:");
 
-  const email = await editor.prompt(`Your email:`);
-  if (!email) return;
+  const email = await inputPrompt("Your email:");
 
   await confirmPrompt(
     "Your content in git repo will overide current space, continue? (Yes/No)",
   );
 
   const parts = url.split("/");
-  parts[2] = `${token}@${parts[2]}`;
+  parts[2] = `${accessToken}@${parts[2]}`;
 
   const payload: IGitInitPayload = {
     url: parts.join("/"),
@@ -59,7 +55,7 @@ export const sync = async () => {
 
 export const replaceToken = async () => {
   const token = await editor.prompt(
-    `Enter new token (For GitLab: username:access_token):`,
+    "Enter new token (For GitLab: username:access_token):",
   );
   if (!token) return;
 
@@ -174,11 +170,20 @@ const removeGit = async () => {
 //   await editor.flashNotification(msg);
 // };
 
-const confirmPrompt = async (msg: string) => {
-  const confirm = await editor.prompt(msg);
-  if (confirm?.toLowerCase() != "yes" || confirm?.toLowerCase() != "y") {
-    console.log("User cancelled!");
+const inputPrompt = async (msg: string) => {
+  const input = (await editor.prompt(msg))?.trim();
+  if (!input) {
+    console.log("User cancelled (no response)");
+    await editor.flashNotification("User cancelled (no response)");
+  }
+  return input || "";
+};
+
+const confirmPrompt = async (msg: string): Promise<void> => {
+  const response = await inputPrompt(msg);
+  const confirmed = ["yes", "y"].includes(response.toLowerCase());
+  if (!confirmed) {
     await editor.flashNotification("User cancelled!");
-    return;
+    throw new Error("User cancelled");
   }
 };
